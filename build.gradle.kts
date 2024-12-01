@@ -1,11 +1,11 @@
+import org.jlleitschuh.gradle.ktlint.KtlintExtension
+
 plugins {
     id("org.springframework.boot") version "3.4.0"
     id("io.spring.dependency-management") version "1.1.6"
-
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
-
-    kotlin("jvm") version "2.1.0"
-    kotlin("plugin.spring") version "2.1.0"
+    kotlin("jvm") version "2.0.21"
+    kotlin("plugin.spring") version "2.0.21"
 }
 
 group = "org.boro"
@@ -30,8 +30,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
 
     // mail
-    implementation("jakarta.mail:jakarta.mail-api:2.1.3")
-    implementation("org.eclipse.angus:jakarta.mail:2.0.3")
+    implementation("com.google.api-client:google-api-client:2.0.0")
+    implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
+    implementation("com.google.apis:google-api-services-gmail:v1-rev20220404-2.0.0")
+    implementation("com.google.api-client:google-api-client-gson:2.1.1")
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.17.0")
 
     // security
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -43,7 +46,7 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:3.0.5")
     implementation(kotlin("stdlib-jdk8"))
 
-    //testing
+    // testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
@@ -62,4 +65,9 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+configure<KtlintExtension> {
+    verbose.set(true)
+    outputToConsole.set(true)
 }
