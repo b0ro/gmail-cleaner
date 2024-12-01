@@ -1,7 +1,6 @@
-plugins {
-    id("jacoco")
-    id("org.sonarqube") version "6.0.1.5171"
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 
+plugins {
     id("org.springframework.boot") version "3.4.0"
     id("io.spring.dependency-management") version "1.1.6"
 
@@ -75,38 +74,12 @@ ktlint {
     enableExperimentalRules.set(false)
 }
 
-tasks.jacocoTestReport {
-    executionData(fileTree(layout.buildDirectory).include("jacoco/*.exec"))
-    reports {
-        xml.required = true
-        html.required = true
-    }
-}
-
-sonarqube {
-    properties {
-        property("sonar.projectKey", "b0ro_gmail-cleaner")
-        property("sonar.organization", "b0ro")
-        property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.sources", ".")
-        property("sonar.inclusions", "src/main/kotlin/**,src/main/resources/**")
-        property("sonar.exclusions", "src/main/resources/__files")
-    }
-}
-
 tasks.withType<Test> {
     useJUnitPlatform()
-}
-
-tasks.test {
-    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
-}
-tasks.jacocoTestReport {
-    dependsOn(tasks.test) // tests are required to run before generating the report
-}
-
-tasks.sonarqube.configure {
-    dependsOn(tasks.jacocoTestReport)
+    testLogging {
+        events("passed", "skipped", "failed")
+        exceptionFormat = FULL
+    }
 }
 
 // make application executable jar to register it as linux service
