@@ -2,5 +2,3 @@
 # @timeout 30 m
 POST {{host}}/cleaner/messages?sender=notifications-noreply@linkedin.com
 Content-Type: application/json
-
-{"username": "artur.borodziej@gmail.com", "password": "mjmo czct lmmg lojd"}

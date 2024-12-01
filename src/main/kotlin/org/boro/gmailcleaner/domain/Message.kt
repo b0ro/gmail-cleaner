@@ -1,8 +1,9 @@
 package org.boro.gmailcleaner.domain
 
 data class Message(
-    val from: List<String>,
+    val id: String,
     val subject: String,
+    val from: String,
+    val sentDate: String,
     val content: String,
-    val sentDate: String
 )
