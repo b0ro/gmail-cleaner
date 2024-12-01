@@ -1,9 +1,12 @@
-import org.jlleitschuh.gradle.ktlint.KtlintExtension
-
 plugins {
+    id("jacoco")
+    id("org.sonarqube") version "6.0.1.5171"
+
     id("org.springframework.boot") version "3.4.0"
     id("io.spring.dependency-management") version "1.1.6"
+
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
+
     kotlin("jvm") version "2.0.21"
     kotlin("plugin.spring") version "2.0.21"
 }
@@ -55,6 +58,7 @@ dependencies {
 
     // developer tools
     compileOnly("org.springframework.boot:spring-boot-devtools")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
 
 kotlin {
@@ -63,11 +67,49 @@ kotlin {
     }
 }
 
+ktlint {
+    debug.set(false)
+    verbose.set(false)
+    outputToConsole.set(true)
+    ignoreFailures.set(false)
+    enableExperimentalRules.set(false)
+}
+
+tasks.jacocoTestReport {
+    executionData(fileTree(layout.buildDirectory).include("jacoco/*.exec"))
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "b0ro_gmail-cleaner")
+        property("sonar.organization", "b0ro")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.sources", ".")
+        property("sonar.inclusions", "src/main/kotlin/**,src/main/resources/**")
+        property("sonar.exclusions", "src/main/resources/__files")
+    }
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-configure<KtlintExtension> {
-    verbose.set(true)
-    outputToConsole.set(true)
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+tasks.sonarqube.configure {
+    dependsOn(tasks.jacocoTestReport)
+}
+
+// make application executable jar to register it as linux service
+tasks.bootJar {
+    launchScript()
 }
