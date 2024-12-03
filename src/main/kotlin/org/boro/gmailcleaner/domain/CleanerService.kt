@@ -4,10 +4,15 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport.newTruste
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.gmail.Gmail
 import com.google.api.services.gmail.model.BatchDeleteMessagesRequest
+import com.google.api.services.gmail.model.ListMessagesResponse
+import com.google.api.services.gmail.model.ListThreadsResponse
 import com.google.auth.http.HttpCredentialsAdapter
 import com.google.auth.oauth2.AccessToken
 import com.google.auth.oauth2.GoogleCredentials
 import mu.KotlinLogging.logger
+import org.boro.gmailcleaner.domain.dto.ListResult
+import org.boro.gmailcleaner.domain.dto.Message
+import org.boro.gmailcleaner.domain.dto.MessageThread
 import com.google.api.services.gmail.Gmail.Users.Messages as GmailMessages
 import com.google.api.services.gmail.Gmail.Users.Threads as GmailThreads
 import com.google.api.services.gmail.model.Message as GmailMessage
@@ -22,32 +27,36 @@ private const val DEFAULT_USER = "me"
 class CleanerService {
     private val logger = logger {}
 
-    fun findMessagesBySender(
-        sender: String,
-        accessToken: String,
-    ): List<Message> {
+    fun findMessages(
+        params: ListParams,
+        accessToken: String
+    ): ListResult<Message> {
         val messages = api(accessToken).users().messages()
-        val result =
-            messages.listBySender(sender)
-                .map { message(it.id, messages) }
+        val list = messages.listByQuery(params)
 
-        logger.info { "Fetching messages sent by: $sender. Found ${result.size} messages" }
+        val result = ListResult(
+            elements = list?.messages?.map { message(it.id, messages) } ?: emptyList(),
+            nextPageToken = list?.nextPageToken,
+        )
+
+        logger.debug { "Per page: ${params.perPage}, pageToken: ${params.pageToken}" }
+        logger.info { "Fetching messages for [${params.query}]. Found ${result.elements.size} messages" }
 
         return result
     }
 
-    fun deleteMessagesBySender(
-        sender: String,
+    fun deleteMessages(
+        query: String,
         accessToken: String,
     ): Int {
         val messages = api(accessToken).users().messages()
-        val ids = messages.listAllIdsBySender(sender)
+        val ids = messages.listAllIds(query)
 
         if (ids.isEmpty()) {
-            logger.info { "No messages found for $sender. Skipping" }
+            logger.info { "No messages found for [$query]. Skipping" }
             return 0
         }
-        logger.info { "Deleting messages from: $sender. Found ${ids.size} messages" }
+        logger.info { "Deleting messages for [$query]. Found ${ids.size} messages" }
 
         ids.chunked(MAX_IDS_CHUNK_SIZE) {
             logger.debug { "Processing batch of ${it.size} ids" }
@@ -60,32 +69,37 @@ class CleanerService {
         return ids.size
     }
 
-    fun findThreadsBySender(
-        sender: String,
+    fun findThreads(
+        params: ListParams,
         accessToken: String,
-    ): List<MessageThread> {
+    ): ListResult<MessageThread> {
         val threads = api(accessToken).users().threads()
-        val result =
-            threads.listBySender(sender)
-                .map { thread(it) }
+        val list =
+            threads.listByQuery(params)
 
-        logger.info { "Fetching threads sent by: $sender. Found ${result.size} threads" }
+        val result = ListResult(
+            elements = list?.threads?.map { thread(it) } ?: emptyList(),
+            nextPageToken = list?.nextPageToken,
+        )
+
+        logger.debug { "Per page: ${params.perPage}, pageToken: ${params.pageToken}" }
+        logger.info { "Fetching threads for [${params.query}]. Found ${result.elements.size} threads" }
 
         return result
     }
 
-    fun deleteThreadsBySender(
-        sender: String,
+    fun deleteThreads(
+        query: String,
         accessToken: String,
     ): Int {
         val threads = api(accessToken).users().threads()
-        val ids = threads.listAllIdsBySender(sender)
+        val ids = threads.listAllIds(query)
 
         if (ids.isEmpty()) {
-            logger.info { "No threads found for $sender. Skipping" }
+            logger.info { "No threads found for [$query]. Skipping" }
             return 0
         }
-        logger.info { "Deleting threads from: $sender. Found ${ids.size} threads" }
+        logger.info { "Deleting threads for [$query]. Found ${ids.size} threads" }
 
         ids.forEach { threads.delete(DEFAULT_USER, it).execute() }
 
@@ -146,7 +160,7 @@ class CleanerService {
             .build()
     }
 
-    private fun GmailMessages.listAllIdsBySender(sender: String): List<String> {
+    private fun GmailMessages.listAllIds(query: String): List<String> {
         val result = mutableListOf<String>()
         var iteration = 0
         var pageToken: String? = null
@@ -154,13 +168,9 @@ class CleanerService {
         do {
             val response =
                 list(DEFAULT_USER)
-                    .setQ("from:$sender")
+                    .setQ(query)
                     .setMaxResults(MAX_RESULT)
-                    .apply {
-                        if (pageToken != null) {
-                            setPageToken(pageToken)
-                        }
-                    }
+                    .setPageToken(pageToken)
                     .execute()
 
             pageToken = response.nextPageToken
@@ -169,7 +179,7 @@ class CleanerService {
                 ?.let { result += it }
 
             iteration++
-            val found = response?.messages?.size
+            val found = response?.messages?.size ?: 0
             logger.debug { "Fetching ids, iteration: $iteration pageToken: $pageToken, found $found ids" }
         } while (pageToken != null && iteration < MAX_ITERATIONS)
 
@@ -178,7 +188,7 @@ class CleanerService {
         return result
     }
 
-    private fun GmailThreads.listAllIdsBySender(sender: String): List<String> {
+    private fun GmailThreads.listAllIds(query: String): List<String> {
         val result = mutableListOf<String>()
         var iteration = 0
         var pageToken: String? = null
@@ -186,13 +196,9 @@ class CleanerService {
         do {
             val response =
                 list(DEFAULT_USER)
-                    .setQ("from:$sender")
+                    .setQ(query)
                     .setMaxResults(MAX_RESULT)
-                    .apply {
-                        if (pageToken != null) {
-                            setPageToken(pageToken)
-                        }
-                    }
+                    .setPageToken(pageToken)
                     .execute()
 
             pageToken = response.nextPageToken
@@ -201,7 +207,7 @@ class CleanerService {
                 ?.let { result += it }
 
             iteration++
-            val found = response?.threads?.size
+            val found = response?.threads?.size ?: 0
             logger.debug { "Fetching ids, iteration: $iteration pageToken: $pageToken, found $found ids" }
         } while (pageToken != null && iteration < MAX_ITERATIONS)
 
@@ -210,19 +216,23 @@ class CleanerService {
         return result
     }
 
-    private fun GmailMessages.listBySender(sender: String): List<GmailMessage> =
+    private fun GmailMessages.listByQuery(params: ListParams): ListMessagesResponse? =
         list(DEFAULT_USER)
-            .setQ("from:$sender")
+            .setQ(params.query)
+            .setMaxResults(params.perPage)
+            .setPageToken(params.pageToken)
             .execute()
-            .messages ?: emptyList()
 
-    private fun GmailThreads.listBySender(sender: String): List<GmailThread> =
+    private fun GmailThreads.listByQuery(params: ListParams): ListThreadsResponse? =
         list(DEFAULT_USER)
-            .setQ("from:$sender")
+            .setQ(params.query)
+            .setMaxResults(params.perPage)
+            .setPageToken(params.pageToken)
             .execute()
-            .threads ?: emptyList()
 
     companion object {
         val JSON_FACTORY: GsonFactory = GsonFactory.getDefaultInstance()
     }
 }
+
+data class ListParams(val query: String, val perPage: Long, val pageToken: String?)
