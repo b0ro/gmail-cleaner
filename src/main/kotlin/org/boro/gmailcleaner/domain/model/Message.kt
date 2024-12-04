@@ -1,4 +1,4 @@
-package org.boro.gmailcleaner.domain.dto
+package org.boro.gmailcleaner.domain.model
 
 data class Message(
     val id: String,

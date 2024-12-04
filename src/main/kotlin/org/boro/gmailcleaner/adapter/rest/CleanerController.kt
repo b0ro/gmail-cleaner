@@ -2,11 +2,11 @@ package org.boro.gmailcleaner.adapter.rest
 
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.NotBlank
-import org.boro.gmailcleaner.domain.CleanerService
-import org.boro.gmailcleaner.domain.ListParams
-import org.boro.gmailcleaner.domain.dto.ListResult
-import org.boro.gmailcleaner.domain.dto.Message
-import org.boro.gmailcleaner.domain.dto.MessageThread
+import org.boro.gmailcleaner.domain.CleanerFacade
+import org.boro.gmailcleaner.domain.model.ListParams
+import org.boro.gmailcleaner.domain.model.ListResult
+import org.boro.gmailcleaner.domain.model.Message
+import org.boro.gmailcleaner.domain.model.MessageThread
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestHeader
@@ -20,7 +20,7 @@ private const val ACCESS_TOKEN_HEADER = "AccessToken"
 
 @RestController
 @RequestMapping("cleaner")
-class CleanerController(val service: CleanerService) {
+class CleanerController(private val service: CleanerFacade) {
     @GetMapping("/messages")
     fun findMessages(
         @RequestParam
