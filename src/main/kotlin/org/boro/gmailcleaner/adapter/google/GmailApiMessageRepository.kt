@@ -10,7 +10,9 @@ import org.boro.gmailcleaner.domain.model.Message
 import org.boro.gmailcleaner.domain.port.MessageRepository
 import com.google.api.services.gmail.model.Message as GmailMessage
 
-class GmailApiMessageRepository : AbstractGmailApiRepository(), MessageRepository {
+private const val MAX_IDS_CHUNK_SIZE = 1000
+
+class GmailApiMessageRepository : GmailApiRepository, MessageRepository {
     private val logger = logger {}
 
     override fun findMessages(

@@ -9,7 +9,7 @@ import org.boro.gmailcleaner.domain.model.ListResult
 import org.boro.gmailcleaner.domain.model.MessageThread
 import org.boro.gmailcleaner.domain.port.MessageThreadRepository
 
-class GmailApiMessageThreadRepository : AbstractGmailApiRepository(), MessageThreadRepository {
+class GmailApiMessageThreadRepository : GmailApiRepository, MessageThreadRepository {
     private val logger = logger {}
 
     override fun findThreads(
