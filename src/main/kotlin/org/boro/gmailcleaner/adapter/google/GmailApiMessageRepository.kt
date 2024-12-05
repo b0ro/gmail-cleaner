@@ -21,13 +21,11 @@ class GmailApiMessageRepository : GmailApiRepository, MessageRepository {
     ): ListResult<Message> {
         val messages = api(accessToken).users().messages()
         val list = messages.listByQuery(params)
-
         val result =
             ListResult(
                 elements = list?.messages?.map { message(it.id, messages) } ?: emptyList(),
                 nextPageToken = list?.nextPageToken,
             )
-
         logger.info { "Fetching messages for [${params.query}]. Found ${result.elements.size} messages" }
         logger.debug { "Per page: ${params.perPage}, pageToken: ${params.pageToken}" }
 
@@ -49,7 +47,6 @@ class GmailApiMessageRepository : GmailApiRepository, MessageRepository {
 
         ids.chunked(MAX_IDS_CHUNK_SIZE) {
             logger.debug { "Processing batch of ${it.size} ids..." }
-
             val request = BatchDeleteMessagesRequest().apply { this.ids = it }
             messages.batchDelete(DEFAULT_USER, request).execute()
         }
@@ -89,6 +86,7 @@ class GmailApiMessageRepository : GmailApiRepository, MessageRepository {
                 return String(part.body.decodeData() ?: ByteArray(0))
             }
         }
+
         return ""
     }
 

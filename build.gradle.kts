@@ -53,6 +53,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("com.tngtech.archunit:archunit:1.3.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // developer tools

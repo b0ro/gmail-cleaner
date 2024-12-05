@@ -17,15 +17,12 @@ class GmailApiMessageThreadRepository : GmailApiRepository, MessageThreadReposit
         accessToken: String,
     ): ListResult<MessageThread> {
         val threads = api(accessToken).users().threads()
-        val list =
-            threads.listByQuery(params)
-
+        val list = threads.listByQuery(params)
         val result =
             ListResult(
                 elements = list?.threads?.map { thread(it) } ?: emptyList(),
                 nextPageToken = list?.nextPageToken,
             )
-
         logger.debug { "Per page: ${params.perPage}, pageToken: ${params.pageToken}" }
         logger.info { "Fetching threads for [${params.query}]. Found ${result.elements.size} threads" }
 
@@ -44,9 +41,7 @@ class GmailApiMessageThreadRepository : GmailApiRepository, MessageThreadReposit
             return 0
         }
         logger.info { "Deleting threads for [$query]. Found ${ids.size} threads" }
-
         ids.forEach { threads.delete(DEFAULT_USER, it).execute() }
-
         logger.info { "Done" }
 
         return ids.size
