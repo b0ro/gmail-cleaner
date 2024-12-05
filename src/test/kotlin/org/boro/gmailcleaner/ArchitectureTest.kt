@@ -51,9 +51,9 @@ class ArchitectureTest {
                 "$BASE_PACKAGE..",
                 "java..",
                 "kotlin..",
-                "javax.persistence..",
-                "javax.transaction..",
-                "javax.validation..",
+                "jakarta.persistence..",
+                "jakarta.transaction..",
+                "jakarta.validation..",
                 "org.jetbrains..",
                 "org.hibernate..",
             )

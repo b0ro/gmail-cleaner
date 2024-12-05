@@ -1,12 +1,14 @@
-package org.boro.gmailcleaner.adapter.google
+package org.boro.gmailcleaner.adapter.gmail
 
 import com.google.api.services.gmail.Gmail.Users.Messages
 import com.google.api.services.gmail.model.BatchDeleteMessagesRequest
 import com.google.api.services.gmail.model.ListMessagesResponse
 import mu.KotlinLogging.logger
+import org.boro.gmailcleaner.domain.model.AccessToken
 import org.boro.gmailcleaner.domain.model.ListParams
 import org.boro.gmailcleaner.domain.model.ListResult
 import org.boro.gmailcleaner.domain.model.Message
+import org.boro.gmailcleaner.domain.model.Query
 import org.boro.gmailcleaner.domain.port.MessageRepository
 import com.google.api.services.gmail.model.Message as GmailMessage
 
@@ -17,7 +19,7 @@ class GmailApiMessageRepository : GmailApiRepository, MessageRepository {
 
     override fun findMessages(
         params: ListParams,
-        accessToken: String,
+        accessToken: AccessToken,
     ): ListResult<Message> {
         val messages = api(accessToken).users().messages()
         val list = messages.listByQuery(params)
@@ -26,24 +28,24 @@ class GmailApiMessageRepository : GmailApiRepository, MessageRepository {
                 elements = list?.messages?.map { message(it.id, messages) } ?: emptyList(),
                 nextPageToken = list?.nextPageToken,
             )
-        logger.info { "Fetching messages for [${params.query}]. Found ${result.elements.size} messages" }
+        logger.info { "Fetching messages for [${params.query.value}]. Found ${result.elements.size} messages" }
         logger.debug { "Per page: ${params.perPage}, pageToken: ${params.pageToken}" }
 
         return result
     }
 
     override fun deleteMessages(
-        query: String,
-        accessToken: String,
+        query: Query,
+        accessToken: AccessToken,
     ): Int {
         val messages = api(accessToken).users().messages()
         val ids = messages.listAllIds(query)
 
         if (ids.isEmpty()) {
-            logger.info { "No messages found for [$query]. Skipping" }
+            logger.info { "No messages found for [${query.value}]. Skipping" }
             return 0
         }
-        logger.info { "Deleting messages for [$query]. Found ${ids.size} messages" }
+        logger.info { "Deleting messages for [${query.value}]. Found ${ids.size} messages" }
 
         ids.chunked(MAX_IDS_CHUNK_SIZE) {
             logger.debug { "Processing batch of ${it.size} ids..." }
@@ -90,7 +92,7 @@ class GmailApiMessageRepository : GmailApiRepository, MessageRepository {
         return ""
     }
 
-    private fun Messages.listAllIds(query: String): List<String> {
+    private fun Messages.listAllIds(query: Query): List<String> {
         val result = mutableListOf<String>()
         var iteration = 0
         var pageToken: String? = null
@@ -98,7 +100,7 @@ class GmailApiMessageRepository : GmailApiRepository, MessageRepository {
         do {
             val response =
                 list(DEFAULT_USER)
-                    .setQ(query)
+                    .setQ(query.value)
                     .setMaxResults(MAX_RESULT)
                     .setPageToken(pageToken)
                     .execute()
@@ -120,7 +122,7 @@ class GmailApiMessageRepository : GmailApiRepository, MessageRepository {
 
     private fun Messages.listByQuery(params: ListParams): ListMessagesResponse? =
         list(DEFAULT_USER)
-            .setQ(params.query)
+            .setQ(params.query.value)
             .setMaxResults(params.perPage)
             .setPageToken(params.pageToken)
             .execute()

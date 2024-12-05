@@ -1,7 +1,7 @@
 package org.boro.gmailcleaner.infrastructure
 
-import org.boro.gmailcleaner.adapter.google.GmailApiMessageRepository
-import org.boro.gmailcleaner.adapter.google.GmailApiMessageThreadRepository
+import org.boro.gmailcleaner.adapter.gmail.GmailApiMessageRepository
+import org.boro.gmailcleaner.adapter.gmail.GmailApiMessageThreadRepository
 import org.boro.gmailcleaner.domain.CleanerFacade
 import org.boro.gmailcleaner.domain.port.MessageRepository
 import org.boro.gmailcleaner.domain.port.MessageThreadRepository

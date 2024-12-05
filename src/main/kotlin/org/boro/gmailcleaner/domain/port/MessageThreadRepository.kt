@@ -1,17 +1,19 @@
 package org.boro.gmailcleaner.domain.port
 
+import org.boro.gmailcleaner.domain.model.AccessToken
 import org.boro.gmailcleaner.domain.model.ListParams
 import org.boro.gmailcleaner.domain.model.ListResult
 import org.boro.gmailcleaner.domain.model.MessageThread
+import org.boro.gmailcleaner.domain.model.Query
 
 interface MessageThreadRepository {
     fun findThreads(
         params: ListParams,
-        accessToken: String,
+        accessToken: AccessToken,
     ): ListResult<MessageThread>
 
     fun deleteThreads(
-        query: String,
-        accessToken: String,
+        query: Query,
+        accessToken: AccessToken,
     ): Int
 }
