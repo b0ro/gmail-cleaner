@@ -9,6 +9,7 @@ import org.boro.gmailcleaner.domain.model.ListResult
 import org.boro.gmailcleaner.domain.model.Message
 import org.boro.gmailcleaner.domain.model.MessageThread
 import org.boro.gmailcleaner.domain.model.Query
+import org.boro.gmailcleaner.domain.model.Quota
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestHeader
@@ -21,8 +22,8 @@ private const val MAX_PER_PAGE_PARAM_MESSAGE = "There can be maximum 500 element
 private const val ACCESS_TOKEN_HEADER = "AccessToken"
 
 @RestController
-@RequestMapping("cleaner")
-class CleanerController(private val service: CleanerFacade) {
+@RequestMapping("api")
+class CleanerController(private val facade: CleanerFacade) {
     @GetMapping("/messages")
     fun findMessages(
         @RequestParam
@@ -36,7 +37,7 @@ class CleanerController(private val service: CleanerFacade) {
         @RequestHeader(ACCESS_TOKEN_HEADER)
         accessToken: String,
     ): ListResponse<Message> =
-        service.findMessages(
+        facade.findMessages(
             ListParams(
                 query = Query(query),
                 perPage = perPage,
@@ -50,9 +51,10 @@ class CleanerController(private val service: CleanerFacade) {
         @RequestParam
         @NotBlank(message = BLANK_QUERY_PARAM_MESSAGE)
         query: String,
-        @RequestHeader(ACCESS_TOKEN_HEADER) accessToken: String,
+        @RequestHeader(ACCESS_TOKEN_HEADER)
+        accessToken: String,
     ): DeletedResponse =
-        service.deleteMessages(
+        facade.deleteMessages(
             Query(query),
             AccessToken(accessToken),
         ).toDeletedResponse()
@@ -67,9 +69,10 @@ class CleanerController(private val service: CleanerFacade) {
         perPage: Long,
         @RequestParam(required = false)
         pageToken: String?,
-        @RequestHeader(ACCESS_TOKEN_HEADER) accessToken: String,
+        @RequestHeader(ACCESS_TOKEN_HEADER)
+        accessToken: String,
     ): ListResponse<MessageThread> =
-        service.findThreads(
+        facade.findThreads(
             ListParams(
                 query = Query(query),
                 perPage = perPage,
@@ -83,12 +86,19 @@ class CleanerController(private val service: CleanerFacade) {
         @RequestParam
         @NotBlank(message = BLANK_QUERY_PARAM_MESSAGE)
         query: String,
-        @RequestHeader(ACCESS_TOKEN_HEADER) accessToken: String,
+        @RequestHeader(ACCESS_TOKEN_HEADER)
+        accessToken: String,
     ): DeletedResponse =
-        service.deleteThreads(
+        facade.deleteThreads(
             Query(query),
             AccessToken(accessToken),
         ).toDeletedResponse()
+
+    @GetMapping("/quota")
+    fun getQuota(
+        @RequestHeader(ACCESS_TOKEN_HEADER) accessToken: String,
+    ): Quota =
+        facade.getQuota(AccessToken(accessToken))
 }
 
 data class ListResponse<T>(val count: Int, val elements: List<T>, val nextPageToken: String?)

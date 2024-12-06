@@ -1,10 +1,12 @@
 package org.boro.gmailcleaner.infrastructure
 
+import org.boro.gmailcleaner.adapter.drive.GoogleDriveApiQuotaRepository
 import org.boro.gmailcleaner.adapter.gmail.GmailApiMessageRepository
 import org.boro.gmailcleaner.adapter.gmail.GmailApiMessageThreadRepository
 import org.boro.gmailcleaner.domain.CleanerFacade
 import org.boro.gmailcleaner.domain.port.MessageRepository
 import org.boro.gmailcleaner.domain.port.MessageThreadRepository
+import org.boro.gmailcleaner.domain.port.QuotaRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -17,8 +19,17 @@ class CleanerConfiguration {
     fun messageThreadRepository(): MessageThreadRepository = GmailApiMessageThreadRepository()
 
     @Bean
+    fun quotaRepository(): QuotaRepository = GoogleDriveApiQuotaRepository()
+
+    @Bean
     fun cleanerService(
         messageRepository: MessageRepository,
         messageThreadRepository: MessageThreadRepository,
-    ): CleanerFacade = CleanerFacade(messageRepository, messageThreadRepository)
+        quotaRepository: QuotaRepository,
+    ): CleanerFacade =
+        CleanerFacade(
+            messageRepository = messageRepository,
+            messageThreadRepository = messageThreadRepository,
+            quotaRepository = quotaRepository,
+        )
 }

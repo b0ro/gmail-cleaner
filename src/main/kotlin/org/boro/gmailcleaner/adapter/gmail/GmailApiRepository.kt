@@ -16,8 +16,8 @@ private const val APPLICATION_NAME = "GmailCleaner"
 private val JSON_FACTORY: GsonFactory = GsonFactory.getDefaultInstance()
 
 interface GmailApiRepository {
-    fun api(token: AccessToken): Gmail {
-        return Gmail.Builder(
+    fun api(token: AccessToken): Gmail =
+        Gmail.Builder(
             newTrustedTransport(),
             JSON_FACTORY,
             HttpCredentialsAdapter(
@@ -27,5 +27,4 @@ interface GmailApiRepository {
             ),
         ).setApplicationName(APPLICATION_NAME)
             .build()
-    }
 }

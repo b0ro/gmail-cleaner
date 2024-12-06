@@ -6,12 +6,15 @@ import org.boro.gmailcleaner.domain.model.ListResult
 import org.boro.gmailcleaner.domain.model.Message
 import org.boro.gmailcleaner.domain.model.MessageThread
 import org.boro.gmailcleaner.domain.model.Query
+import org.boro.gmailcleaner.domain.model.Quota
 import org.boro.gmailcleaner.domain.port.MessageRepository
 import org.boro.gmailcleaner.domain.port.MessageThreadRepository
+import org.boro.gmailcleaner.domain.port.QuotaRepository
 
 class CleanerFacade(
     private val messageRepository: MessageRepository,
-    private val threadRepository: MessageThreadRepository,
+    private val messageThreadRepository: MessageThreadRepository,
+    private val quotaRepository: QuotaRepository,
 ) {
     fun findMessages(
         listParams: ListParams,
@@ -26,10 +29,13 @@ class CleanerFacade(
     fun findThreads(
         listParams: ListParams,
         accessToken: AccessToken,
-    ): ListResult<MessageThread> = threadRepository.findThreads(listParams, accessToken)
+    ): ListResult<MessageThread> = messageThreadRepository.findThreads(listParams, accessToken)
 
     fun deleteThreads(
         query: Query,
         accessToken: AccessToken,
-    ): Int = threadRepository.deleteThreads(query, accessToken)
+    ): Int = messageThreadRepository.deleteThreads(query, accessToken)
+
+    fun getQuota(accessToken: AccessToken): Quota =
+        quotaRepository.getQuota(accessToken)
 }
