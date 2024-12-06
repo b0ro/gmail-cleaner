@@ -3,6 +3,10 @@ package org.boro.gmailcleaner.domain.model
 @JvmInline
 value class Query(val value: String) {
     init {
-        require(value.isNotBlank()) { "Query cannot be blank" }
+        if (value.isBlank()) {
+            throw InvalidQueryException("Query cannot be blank")
+        }
     }
 }
+
+class InvalidQueryException(message: String) : IllegalArgumentException(message)
