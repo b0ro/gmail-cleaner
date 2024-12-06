@@ -16,12 +16,13 @@ private val JSON_FACTORY: GsonFactory = GsonFactory.getDefaultInstance()
 
 class GoogleDriveApiQuotaRepository : QuotaRepository {
     override fun getQuota(accessToken: AccessToken): Quota {
-        val result = api(accessToken)
-            .about()
-            .get()
-            .setFields("user, storageQuota")
-            .execute()
-            .storageQuota
+        val result =
+            api(accessToken)
+                .about()
+                .get()
+                .setFields("user, storageQuota")
+                .execute()
+                .storageQuota
 
         return Quota(
             total = result.limit.bytesToGigaBytes(),

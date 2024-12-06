@@ -97,8 +97,7 @@ class CleanerController(private val facade: CleanerFacade) {
     @GetMapping("/quota")
     fun getQuota(
         @RequestHeader(ACCESS_TOKEN_HEADER) accessToken: String,
-    ): Quota =
-        facade.getQuota(AccessToken(accessToken))
+    ): Quota = facade.getQuota(AccessToken(accessToken))
 }
 
 data class ListResponse<T>(val count: Int, val elements: List<T>, val nextPageToken: String?)

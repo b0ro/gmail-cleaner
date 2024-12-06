@@ -36,6 +36,5 @@ class CleanerFacade(
         accessToken: AccessToken,
     ): Int = messageThreadRepository.deleteThreads(query, accessToken)
 
-    fun getQuota(accessToken: AccessToken): Quota =
-        quotaRepository.getQuota(accessToken)
+    fun getQuota(accessToken: AccessToken): Quota = quotaRepository.getQuota(accessToken)
 }
