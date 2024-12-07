@@ -2,13 +2,13 @@
 version: 2
 updates:
   - package-ecosystem: "gradle"
-    directory: "/"
+    directory: "/gmail-cleaner-backend"
     schedule:
       interval: "daily"
       time: "07:00"
 
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directory: "/gmail-cleaner-frontend"
     schedule:
       interval: "weekly"
       day: "sunday"
