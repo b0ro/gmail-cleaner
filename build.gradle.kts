@@ -33,7 +33,7 @@ dependencies {
 
     // google api
     implementation("com.google.api-client:google-api-client:2.0.0")
-    implementation("com.google.api-client:google-api-client-gson:2.1.1")
+    implementation("com.google.api-client:google-api-client-gson:2.7.0")
     implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
     implementation("com.google.auth:google-auth-library-oauth2-http:1.17.0")
 
