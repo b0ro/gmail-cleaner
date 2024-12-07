@@ -1,6 +1,7 @@
 README.md
 .gradle
 build/
+.env
 
 ### IntelliJ IDEA ###
 .idea
