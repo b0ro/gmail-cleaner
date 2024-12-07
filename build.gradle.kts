@@ -38,7 +38,7 @@ dependencies {
     implementation("com.google.auth:google-auth-library-oauth2-http:1.17.0")
 
     // gmail
-    implementation("com.google.apis:google-api-services-gmail:v1-rev20220404-2.0.0")
+    implementation("com.google.apis:google-api-services-gmail:v1-rev20240520-2.0.0")
 
     // google drive
     implementation("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")
