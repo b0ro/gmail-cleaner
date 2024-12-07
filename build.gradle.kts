@@ -1,11 +1,13 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+
 plugins {
     id("org.springframework.boot") version "3.4.0"
     id("io.spring.dependency-management") version "1.1.6"
 
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
 
-    kotlin("jvm") version "2.1.0"
-    kotlin("plugin.spring") version "2.1.0"
+    kotlin("jvm") version "2.0.21"
+    kotlin("plugin.spring") version "2.0.21"
 }
 
 group = "org.boro"
@@ -29,9 +31,17 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
 
-    // mail
-    implementation("jakarta.mail:jakarta.mail-api:2.1.3")
-    implementation("org.eclipse.angus:jakarta.mail:2.0.3")
+    // google api
+    implementation("com.google.api-client:google-api-client:2.0.0")
+    implementation("com.google.api-client:google-api-client-gson:2.1.1")
+    implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.17.0")
+
+    // gmail
+    implementation("com.google.apis:google-api-services-gmail:v1-rev20220404-2.0.0")
+
+    // google drive
+    implementation("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")
 
     // security
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -43,15 +53,17 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:3.0.5")
     implementation(kotlin("stdlib-jdk8"))
 
-    //testing
+    // testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("com.tngtech.archunit:archunit:1.3.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // developer tools
     compileOnly("org.springframework.boot:spring-boot-devtools")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
 
 kotlin {
@@ -60,6 +72,23 @@ kotlin {
     }
 }
 
+ktlint {
+    debug.set(false)
+    verbose.set(false)
+    outputToConsole.set(true)
+    ignoreFailures.set(false)
+    enableExperimentalRules.set(false)
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+        exceptionFormat = FULL
+    }
+}
+
+// make application executable jar to register it as linux service
+tasks.bootJar {
+    launchScript()
 }
