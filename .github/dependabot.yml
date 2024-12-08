@@ -7,6 +7,12 @@ updates:
       interval: "daily"
       time: "07:00"
 
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "daily"
+      time: "07:00"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

@@ -92,3 +92,11 @@ tasks.withType<Test> {
 tasks.bootJar {
     launchScript()
 }
+
+// frontend:build will be run before the processResources
+tasks.named<Copy>("processResources") {
+    dependsOn("frontend:build")
+    from("frontend/dist/frontend/browser/") {
+        into("public")
+    }
+}

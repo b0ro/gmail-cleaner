@@ -9,4 +9,5 @@ https://stackoverflow.com/questions/58013241/how-can-work-devtools-in-kotlin-and
 
 ### Integrate Angular with Spring Boot with gradle
 - https://www.youtube.com/watch?v=-P3FlYj_yHs
+- https://blog.jdriven.com/2016/10/integrate-angular-spring-boot-gradle/
 - https://blog.ordina-jworks.io/architecture/2018/10/12/spring-boot-angular-gradle.html
