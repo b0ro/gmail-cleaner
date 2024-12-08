@@ -14,7 +14,10 @@ class SecurityConfiguration {
     @Bean
     @Throws(Exception::class)
     fun filterChain(http: HttpSecurity): SecurityFilterChain =
-        http.authorizeHttpRequests { it.anyRequest().authenticated() }
+        http.authorizeHttpRequests {
+            it.requestMatchers("/api/**").authenticated()
+            it.anyRequest().permitAll()
+        }
             .sessionManagement { it.sessionCreationPolicy(STATELESS) }
             .oauth2ResourceServer { it.jwt(Customizer.withDefaults()) }
             .csrf { it.disable() }
