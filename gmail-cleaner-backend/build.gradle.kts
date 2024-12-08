@@ -64,6 +64,9 @@ dependencies {
     // developer tools
     compileOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+    // frontend
+    implementation(project(":gmail-cleaner-frontend"))
 }
 
 kotlin {

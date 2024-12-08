@@ -8,13 +8,18 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy.STATELESS
 import org.springframework.security.web.SecurityFilterChain
 
+private const val API_PATH = "/api/**"
+
 @Configuration
 @EnableWebSecurity
 class SecurityConfiguration {
     @Bean
     @Throws(Exception::class)
     fun filterChain(http: HttpSecurity): SecurityFilterChain =
-        http.authorizeHttpRequests { it.anyRequest().authenticated() }
+        http.authorizeHttpRequests {
+            it.requestMatchers(API_PATH).authenticated()
+            it.anyRequest().permitAll()
+        }
             .sessionManagement { it.sessionCreationPolicy(STATELESS) }
             .oauth2ResourceServer { it.jwt(Customizer.withDefaults()) }
             .csrf { it.disable() }
