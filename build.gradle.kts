@@ -41,7 +41,7 @@ dependencies {
     implementation("com.google.apis:google-api-services-gmail:v1-rev20240520-2.0.0")
 
     // google drive
-    implementation("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")
+    implementation("com.google.apis:google-api-services-drive:v3-rev20241027-2.0.0")
 
     // security
     implementation("org.springframework.boot:spring-boot-starter-security")
