@@ -35,7 +35,7 @@ dependencies {
     implementation("com.google.api-client:google-api-client:2.0.0")
     implementation("com.google.api-client:google-api-client-gson:2.7.0")
     implementation("com.google.oauth-client:google-oauth-client-jetty:1.36.0")
-    implementation("com.google.auth:google-auth-library-oauth2-http:1.30.0")
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.30.1")
 
     // gmail
     implementation("com.google.apis:google-api-services-gmail:v1-rev20240520-2.0.0")
