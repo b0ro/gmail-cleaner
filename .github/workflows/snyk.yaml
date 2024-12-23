@@ -19,3 +19,11 @@ jobs:
           sarif_file: snyk.sarif
       - name: Print Snyk test results
         run: cat snyk.sarif
+      - name: Total vulnerabilities
+        id: snyk-results
+        run: |
+          length=$(jq '.runs[0].results | length' snyk.sarif)
+          echo "vulnerabilities=$length" >> $GITHUB_ENV
+      - name: Fail if vulnerabilities found
+        if: env.vulnerabilities != '0'
+        run: exit 1
