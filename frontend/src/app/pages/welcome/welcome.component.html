@@ -1,0 +1,63 @@
+<section>
+  <nz-page-header nzTitle="Messages Preview" nzSubtitle="Search and select messages to be deleted"></nz-page-header>
+  <form nz-form>
+    <nz-form-item>
+      <nz-form-control [nzSpan]="12">
+        <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
+          <input type="text" nz-input placeholder="input search query" />
+        </nz-input-group>
+        <ng-template #suffixIconButton>
+          <button nz-button nzType="primary" nzSearch><span nz-icon nzType="search"></span></button>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+    <div nz-row>
+      <div nz-col [nzSpan]="12">
+        <label nz-checkbox><span>Move to trash bin instead of deleting</span></label>
+      </div>
+    </div>
+    <div nz-row>
+      <div nz-col>
+        <label>
+          <nz-switch
+            [ngModel]="false"
+            [nzCheckedChildren]="checkedTemplate"
+            [nzUnCheckedChildren]="unCheckedTemplate"
+          ></nz-switch>
+          <ng-template #checkedTemplate><span nz-icon nzType="check"></span></ng-template>
+          <ng-template #unCheckedTemplate><span nz-icon nzType="close"></span></ng-template>
+          <span>This is a label</span>
+        </label>
+      </div>
+    </div>
+  </form>
+</section>
+<section>
+  <div nz-row>
+    <div nz-col [nzSpan]="24">
+      <nz-table
+        #table
+        [nzData]="messages"
+        nzShowPagination="false">
+        <thead>
+        <tr>
+          <th>Sender</th>
+          <th>Subject</th>
+          <th>Message</th>
+          <th>Tags</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (message of table.data; track message) {
+          <tr>
+            <td>{{ message.sender }}</td>
+            <td>{{ message.subject }}</td>
+            <td>{{ message.preview }}</td>
+            <td>{{ message.size }}</td>
+          </tr>
+          }
+        </tbody>
+      </nz-table>
+    </div>
+  </div>
+</section>

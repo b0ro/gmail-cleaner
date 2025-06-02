@@ -15,26 +15,28 @@ class CleanerFacade(
     private val messageRepository: MessageRepository,
     private val messageThreadRepository: MessageThreadRepository,
     private val quotaRepository: QuotaRepository,
+    private val gmailRootUrl: String,
+    private val driveRootUrl: String,
 ) {
     fun findMessages(
         listParams: ListParams,
         accessToken: AccessToken,
-    ): ListResult<Message> = messageRepository.findMessages(listParams, accessToken)
+    ): ListResult<Message> = messageRepository.findMessages(listParams, accessToken, gmailRootUrl)
 
     fun deleteMessages(
         query: Query,
         accessToken: AccessToken,
-    ): Int = messageRepository.deleteMessages(query, accessToken)
+    ): Int = messageRepository.deleteMessages(query, accessToken, gmailRootUrl)
 
     fun findThreads(
         listParams: ListParams,
         accessToken: AccessToken,
-    ): ListResult<MessageThread> = messageThreadRepository.findThreads(listParams, accessToken)
+    ): ListResult<MessageThread> = messageThreadRepository.findThreads(listParams, accessToken, gmailRootUrl)
 
     fun deleteThreads(
         query: Query,
         accessToken: AccessToken,
-    ): Int = messageThreadRepository.deleteThreads(query, accessToken)
+    ): Int = messageThreadRepository.deleteThreads(query, accessToken, gmailRootUrl)
 
-    fun getQuota(accessToken: AccessToken): Quota = quotaRepository.getQuota(accessToken)
+    fun getQuota(accessToken: AccessToken): Quota = quotaRepository.getQuota(accessToken, driveRootUrl)
 }

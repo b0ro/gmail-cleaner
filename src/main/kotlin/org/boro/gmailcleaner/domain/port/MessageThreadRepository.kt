@@ -10,10 +10,12 @@ interface MessageThreadRepository {
     fun findThreads(
         params: ListParams,
         accessToken: AccessToken,
+        rootUrl: String,
     ): ListResult<MessageThread>
 
     fun deleteThreads(
         query: Query,
         accessToken: AccessToken,
+        rootUrl: String,
     ): Int
 }

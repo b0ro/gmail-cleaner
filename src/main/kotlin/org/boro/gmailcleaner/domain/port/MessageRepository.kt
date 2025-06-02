@@ -10,10 +10,12 @@ interface MessageRepository {
     fun findMessages(
         params: ListParams,
         accessToken: AccessToken,
+        rootUrl: String,
     ): ListResult<Message>
 
     fun deleteMessages(
         query: Query,
         accessToken: AccessToken,
+        rootUrl: String,
     ): Int
 }
