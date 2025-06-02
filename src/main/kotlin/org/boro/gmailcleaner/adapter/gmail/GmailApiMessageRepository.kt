@@ -20,8 +20,9 @@ class GmailApiMessageRepository : GmailApiRepository, MessageRepository {
     override fun findMessages(
         params: ListParams,
         accessToken: AccessToken,
+        rootUrl: String,
     ): ListResult<Message> {
-        val messages = api(accessToken).users().messages()
+        val messages = api(accessToken, rootUrl).users().messages()
         val list = messages.listByQuery(params)
         val result =
             ListResult(
@@ -37,8 +38,9 @@ class GmailApiMessageRepository : GmailApiRepository, MessageRepository {
     override fun deleteMessages(
         query: Query,
         accessToken: AccessToken,
+        rootUrl: String,
     ): Int {
-        val messages = api(accessToken).users().messages()
+        val messages = api(accessToken, rootUrl).users().messages()
         val ids = messages.listAllIds(query)
 
         if (ids.isEmpty()) {

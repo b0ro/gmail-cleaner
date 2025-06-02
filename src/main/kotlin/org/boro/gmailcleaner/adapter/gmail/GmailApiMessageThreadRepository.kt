@@ -17,8 +17,9 @@ class GmailApiMessageThreadRepository : GmailApiRepository, MessageThreadReposit
     override fun findThreads(
         params: ListParams,
         accessToken: AccessToken,
+        rootUrl: String,
     ): ListResult<MessageThread> {
-        val threads = api(accessToken).users().threads()
+        val threads = api(accessToken, rootUrl).users().threads()
         val list = threads.listByQuery(params)
         val result =
             ListResult(
@@ -34,8 +35,9 @@ class GmailApiMessageThreadRepository : GmailApiRepository, MessageThreadReposit
     override fun deleteThreads(
         query: Query,
         accessToken: AccessToken,
+        rootUrl: String,
     ): Int {
-        val threads = api(accessToken).users().threads()
+        val threads = api(accessToken, rootUrl).users().threads()
         val ids = threads.listAllIds(query)
 
         if (ids.isEmpty()) {

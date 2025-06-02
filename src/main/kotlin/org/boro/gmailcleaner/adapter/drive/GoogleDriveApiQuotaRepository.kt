@@ -15,9 +15,12 @@ private const val APPLICATION_NAME = "GmailCleaner"
 private val JSON_FACTORY: GsonFactory = GsonFactory.getDefaultInstance()
 
 class GoogleDriveApiQuotaRepository : QuotaRepository {
-    override fun getQuota(accessToken: AccessToken): Quota {
+    override fun getQuota(
+        accessToken: AccessToken,
+        driveRootUrl: String,
+    ): Quota {
         val result =
-            api(accessToken)
+            api(accessToken, driveRootUrl)
                 .about()
                 .get()
                 .setFields("user, storageQuota")
@@ -31,7 +34,10 @@ class GoogleDriveApiQuotaRepository : QuotaRepository {
         )
     }
 
-    private fun api(token: AccessToken): Drive =
+    private fun api(
+        token: AccessToken,
+        driveRootUrl: String,
+    ): Drive =
         Drive.Builder(
             newTrustedTransport(),
             JSON_FACTORY,
@@ -41,6 +47,7 @@ class GoogleDriveApiQuotaRepository : QuotaRepository {
                 ),
             ),
         ).setApplicationName(APPLICATION_NAME)
+            .setRootUrl(driveRootUrl)
             .build()
 
     private fun Long.bytesToGigaBytes(scale: Int = 2): Float =
